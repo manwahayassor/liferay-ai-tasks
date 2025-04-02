@@ -1,10 +1,14 @@
 services:
   liferay:
-    image: liferay/dxp:2024.q4.7
+    build:
+      dockerfile: Dockerfile
+      context: liferay
     ports:
       - 8080:8080
     volumes:
       - ./liferay/files:/mnt/liferay/files
+      - ./liferay/liferay-workspace/bundles/osgi/client-extensions:/opt/liferay/osgi/client-extensions
+      - ./liferay/liferay-workspace/bundles/osgi/modules:/opt/liferay/osgi/modules
       - liferay_data:/opt/liferay/data
     depends_on:
       elasticsearch:
@@ -13,6 +17,7 @@ services:
         condition: service_healthy
       contentwizard:
         condition: service_healthy
+  
   contentwizard:
     build:
       context: contentwizard
@@ -26,6 +31,7 @@ services:
       timeout: 30s
       retries: 3
       start_period: 10s
+  
   elasticsearch:
     build:
       context: elasticsearch
@@ -45,6 +51,7 @@ services:
       timeout: 30s
       retries: 3
       start_period: 10s
+  
   postgres:
     build:
       context: postgres
@@ -64,6 +71,7 @@ services:
       timeout: 3s
       retries: 3
       start_period: 10s
+
 volumes:
   liferay_data:
   elasticsearch_data:

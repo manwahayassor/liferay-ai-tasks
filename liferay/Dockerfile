@@ -1,12 +1,9 @@
-FROM debian:bookworm-slim
+FROM liferay/dxp:2024.q4.7
 
-RUN apt update && apt --assume-yes install openjdk-17-jdk git
-RUN useradd -ms /bin/bash liferay
+USER root
+RUN apt-get update && \
+	apt-get install -y netcat-openbsd
+USER 1000
 
-WORKDIR /opt/app
-
-COPY liferay-workspace .
-
-RUN ./gradlew clean deploy
-
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+ADD --chown=liferay:liferay https://raw.githubusercontent.com/eficode/wait-for/master/wait-for /usr/local/bin/
+RUN chmod +x /usr/local/bin/wait-for

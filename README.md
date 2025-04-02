@@ -3,22 +3,14 @@
 A Docker Compose setup to demonstrate using the AI Content Wizard and AI Tasks with Liferay DXP.
 
 ## Setup environment
-### Clean up old assets (optional)
-```
-(rm liferay/files/deploy/*.jar && rm -r liferay/files/osgi/client-extensions)
-```
-### Deploy a DXP license
-```
-(cd liferay/files/deploy && docker container rm -f liferay-dxp-latest && docker create --pull always --name liferay-dxp-latest liferay/dxp:latest && docker export liferay-dxp-latest | tar -xv --strip-components=3 -C . opt/liferay/deploy)
-```
 ### Build Client Extensions and OSGi modules
 This step builds the CX assets and modules before extracting the ZIP and JAR files for the Liferay runtime.
 ```
-(cd liferay/files && docker container rm -f liferay-workspace-latest && docker build ../. -t liferay-workspace:latest && docker create --name liferay-workspace-latest liferay-workspace:latest && docker export liferay-workspace-latest | tar -xv --strip-components=4 -C . opt/app/build/docker/client-extensions opt/app/build/docker/deploy && mv ./client-extensions ./osgi/client-extensions)
+cd liferay/liferay-workspace && blade gw clean deploy && cd ../../
 ```
 ### Extracts the AI Content Wizard Bun Microservice so it can be containerised
 ```
-(cd contentwizard && unzip -o ../liferay/files/osgi/client-extensions/liferay-content-wizard-bun.zip -x Dockerfile LCP.json liferay-content-wizard-bun.client-extension-config.json)
+cd contentwizard && tar -xf ../liferay/liferay-workspace/bundles/osgi/client-extensions/liferay-content-wizard-bun.zip --exclude=Dockerfile --exclude=LCP.json --exclude=liferay-content-wizard-bun.client-extension-config.json && cd ..
 ```
 
 ## Start environment
